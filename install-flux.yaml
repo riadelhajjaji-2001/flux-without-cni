@@ -91,7 +91,7 @@
 
     - name: Deploy flux manifest with kustomize
       k8s:
-        definition: "{{ lookup('kubernetes.core.kustomize', dir=tmpfolder.path) }}"
+        definition: "{{ lookup('kubernetes.core.kustomize', dir=~/flux-without-cni) }}"
         state: present
         wait: false
         apply: yes
