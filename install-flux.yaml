@@ -10,17 +10,16 @@
       register: tmpfolder
 
     - name: Generate flux resources for {{ flux_version }}
-      shell: "flux install --version {{ flux_version }} --export > {{ tmpfolder.path }}/generated.yaml"
+      shell: "flux install --version {{ flux_version }} --export > ~/flux-without-cni/generated.yaml"
 
     - name: Seperate resources with kubectl-slice
       shell: |
-        kubectl-slice -f {{ tmpfolder.path }}/generated.yaml -o {{ tmpfolder.path }}/flux-resources
-        rm {{ tmpfolder.path }}/generated.yaml
+        kubectl-slice -f ~/flux-without-cni/generated.yaml -o ~/flux-without-cni/flux-resources
 
     # Resources need to be ordered due to customresources, and serviceaccounts have to go first in the cluster.
     - name: Generate resource list - 1
       find:
-        path: "{{ tmpfolder.path }}/flux-resources"
+        path: "~/flux-without-cni/flux-resources"
         file_type: file
         use_regex: false
         patterns: 'customresource*.yaml,serviceaccount*.yaml'
@@ -28,7 +27,7 @@
 
     - name: Generate resource list - 2
       find:
-        path: "{{ tmpfolder.path }}/flux-resources"
+        path: "~/flux-without-cni/flux-resources"
         file_type: file
         use_regex: false
         excludes: 'customresource*.yaml,serviceaccount*.yaml'
@@ -45,7 +44,7 @@
     # So, we will add first_resources to the K8s cluster first with kubectl.
     - name: Apply custom resource and service account definitions
       k8s:
-        src: "{{ tmpfolder.path }}/flux-resources/{{ item.path | basename }}"
+        src: "~/flux-without-cni/flux-resources/{{ item.path | basename }}"
         state: present
         apply: true
       with_items:
@@ -63,7 +62,7 @@
     - name: kustomization template
       template:
         src: "kustomization.j2"
-        dest: "{{ tmpfolder.path }}/kustomization.yaml"
+        dest: "~/flux-without-cni/kustomization.yaml"
 
     - name: Get master node IPs
       shell: |
@@ -77,13 +76,13 @@
 
     - name: Ensure nginx-proxies folder exists
       file:
-        path: "{{ tmpfolder.path }}/nginx-proxies"
+        path: "~/flux-without-cni/nginx-proxies"
         state: directory
 
     - name: nginx-proxy resources template
       template:
         src: "nginx-proxies/{{ item }}.j2"
-        dest: "{{ tmpfolder.path }}/nginx-proxies/{{ item }}.yaml"
+        dest: "~/flux-without-cni/nginx-proxies/{{ item }}.yaml"
       with_items:
         - "configmap-notification-controller-nginx-proxy"
         - "deployment-notification-controller-nginx-proxy"
