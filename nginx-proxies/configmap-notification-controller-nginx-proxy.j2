@@ -23,9 +23,11 @@ data:
 
         stream {
         upstream notification_controller {
-            {% for k8s_master_ip in k8s_master_ips -%}
-            server {{ k8s_master_ip }}:22581;
-            {% endfor -%}
+              {% for k8s_master_ip in k8s_master_ips -%}
+            {% if k8s_master_ip | ansible.utils.ipv4 %}
+            server {{ k8s_master_ip }}:22571;
+            {% endif %}
+            {% endfor -%} 
             least_conn;
             }
 

@@ -17,22 +17,6 @@ spec:
     spec:
       tolerations:
       - key: node.kubernetes.io/not-ready
-      - key: node-role.kubernetes.io/control-plane
-        operator: Exists
-        effect: NoSchedule
-      - key: node-role.kubernetes.io/master
-        operator: Exists
-        effect: NoSchedule
-      affinity:
-        podAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - source-controller
-            topologyKey: kubernetes.io/hostname
       hostNetwork: true
       dnsPolicy: Default
       nodeSelector:

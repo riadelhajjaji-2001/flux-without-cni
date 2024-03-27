@@ -2,7 +2,7 @@
 - name: Install Flux without CNI
   hosts: localhost
   vars:
-    flux_version: "v0.36.0"
+    flux_version: "v2.2.3"
   tasks:
     - name: Create a temporary folder
       tempfile:
