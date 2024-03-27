@@ -10,16 +10,16 @@
       register: tmpfolder
 
     - name: Generate flux resources for {{ flux_version }}
-      shell: "flux install --version {{ flux_version }} --export > ~/flux-without-cni/generated.yaml"
+      shell: "flux install --version {{ flux_version }} --export > /home/ubuntu/flux-without-cni/generated.yaml"
 
     - name: Seperate resources with kubectl-slice
       shell: |
-        kubectl-slice -f ~/flux-without-cni/generated.yaml -o ~/flux-without-cni/flux-resources
+        kubectl-slice -f /home/ubuntu/flux-without-cni/generated.yaml -o /home/ubuntu/flux-without-cni/flux-resources
 
     # Resources need to be ordered due to customresources, and serviceaccounts have to go first in the cluster.
     - name: Generate resource list - 1
       find:
-        path: "~/flux-without-cni/flux-resources"
+        path: "/home/ubuntu/flux-without-cni/flux-resources"
         file_type: file
         use_regex: false
         patterns: 'customresource*.yaml,serviceaccount*.yaml'
@@ -27,7 +27,7 @@
 
     - name: Generate resource list - 2
       find:
-        path: "~/flux-without-cni/flux-resources"
+        path: "/home/ubuntu/flux-without-cni/flux-resources"
         file_type: file
         use_regex: false
         excludes: 'customresource*.yaml,serviceaccount*.yaml'
@@ -44,7 +44,7 @@
     # So, we will add first_resources to the K8s cluster first with kubectl.
     - name: Apply custom resource and service account definitions
       k8s:
-        src: "~/flux-without-cni/flux-resources/{{ item.path | basename }}"
+        src: "/home/ubuntu/flux-without-cni/flux-resources/{{ item.path | basename }}"
         state: present
         apply: true
       with_items:
@@ -62,7 +62,7 @@
     - name: kustomization template
       template:
         src: "kustomization.j2"
-        dest: "~/flux-without-cni/kustomization.yaml"
+        dest: "/home/ubuntu/flux-without-cni/kustomization.yaml"
 
     - name: Get master node IPs
       shell: |
@@ -76,13 +76,13 @@
 
     - name: Ensure nginx-proxies folder exists
       file:
-        path: "~/flux-without-cni/nginx-proxies"
+        path: "/home/ubuntu/flux-without-cni/nginx-proxies"
         state: directory
 
     - name: nginx-proxy resources template
       template:
         src: "nginx-proxies/{{ item }}.j2"
-        dest: "~/flux-without-cni/nginx-proxies/{{ item }}.yaml"
+        dest: "/home/ubuntu/flux-without-cni/nginx-proxies/{{ item }}.yaml"
       with_items:
         - "configmap-notification-controller-nginx-proxy"
         - "deployment-notification-controller-nginx-proxy"
@@ -91,7 +91,7 @@
 
     - name: Deploy flux manifest with kustomize
       k8s:
-        definition: "{{ lookup('kubernetes.core.kustomize', dir='~/flux-without-cni') }}"
+        definition: "{{ lookup('kubernetes.core.kustomize', dir='/home/ubuntu/flux-without-cni') }}"
         state: present
         wait: false
         apply: yes
