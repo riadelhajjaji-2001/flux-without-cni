@@ -1,0 +1,23 @@
+resources:
+  - clusterrolebinding-cluster-reconciler-flux-system.yaml
+  - deployment-kustomize-controller.yaml
+  - clusterrole-flux-view-flux-system.yaml
+  - clusterrole-flux-edit-flux-system.yaml
+  - deployment-notification-controller.yaml
+  - clusterrole-crd-controller-flux-system.yaml
+  - namespace-flux-system.yaml
+  - deployment-helm-controller.yaml
+  - deployment-source-controller.yaml
+  - service-source-controller.yaml
+  - resourcequota-critical-pods-flux-system.yaml
+  - service-webhook-receiver.yaml
+  - service-notification-controller.yaml
+  - networkpolicy-allow-egress.yaml
+  - networkpolicy-allow-webhooks.yaml
+  - networkpolicy-allow-scraping.yaml
+  - clusterrolebinding-crd-controller-flux-system.yaml
+  - ../nginx-proxies/configmap-notification-controller-nginx-proxy.yaml
+  - ../nginx-proxies/configmap-source-controller-nginx-proxy.yaml
+  - ../nginx-proxies/deployment-notification-controller-nginx-proxy.yaml
+  - ../nginx-proxies/deployment-source-controller-nginx-proxy.yaml
+
